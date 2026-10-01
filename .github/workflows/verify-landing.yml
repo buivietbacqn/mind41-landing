@@ -34,10 +34,11 @@ jobs:
             page.on('pageerror',e=>errors.push(e.message));
             const response=await page.goto('http://'+process.env.SSH_HOST+':8088/',{waitUntil:'networkidle',timeout:30000});
             assert.equal(response.status(),200);
-            assert.match(await page.title(),/intraMind/);
+            assert.match(await page.title(),/Mind41/);
             await page.screenshot({path:'screenshots/desktop.png',fullPage:true});
             await page.setViewportSize({width:390,height:844});
             assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Mobile horizontal overflow');
+            assert.equal(await page.locator('.glow-card .icon').first().evaluate(e=>getComputedStyle(e).width),'112px');
             await page.screenshot({path:'screenshots/mobile.png',fullPage:true});
             await page.locator('.hamb').click();
             assert.equal(await page.locator('#mobile-menu').isVisible(),true);
