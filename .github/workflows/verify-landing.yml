@@ -43,6 +43,11 @@ jobs:
             await page.locator('.thumb').first().scrollIntoViewIfNeeded();
             await page.waitForFunction(()=>[...document.querySelectorAll('.thumb img')].length===3 && [...document.querySelectorAll('.thumb img')].every(img=>img.complete&&img.naturalWidth>0));
             await page.locator('.thumb').first().locator('..').locator('..').screenshot({path:'screenshots/features.png'});
+            for (const selector of ['.mockui','.security-visual','.faq-visual']) {
+              await page.locator(selector).scrollIntoViewIfNeeded();
+              await page.waitForFunction(selector=>{const img=document.querySelector(selector+' img');return img&&img.complete&&img.naturalWidth>0},selector);
+              await page.locator(selector).screenshot({path:'screenshots/'+selector.slice(1)+'.png'});
+            }
             await page.screenshot({path:'screenshots/desktop.png',fullPage:true});
             await page.setViewportSize({width:390,height:844});
             assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Mobile horizontal overflow');
