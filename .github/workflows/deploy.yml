@@ -1,0 +1,89 @@
+name: Deploy landing page
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mind41-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check landing page
+        id: site
+        shell: bash
+        run: |
+          if [ -s public/index.html ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deploy skipped: add the landing page to public/index.html first."
+          fi
+      - name: Configure SSH
+        if: steps.site.outputs.ready == 'true'
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variable in SSH_PRIVATE_KEY SSH_KNOWN_HOSTS SSH_HOST SSH_USER; do
+            if [ -z "${!variable}" ]; then
+              echo "::error::Missing GitHub Actions secret: $variable"
+              exit 1
+            fi
+          done
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null
+      - name: Upload release and activate
+        if: steps.site.outputs.ready == 'true'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release="/var/www/mind41-landing/releases/${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          ssh_options="-p 22 -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15"
+          ssh $ssh_options "$SSH_USER@$SSH_HOST" "mkdir -p '$release'"
+          rsync -az --chmod=D755,F644 -e "ssh $ssh_options" public/ "$SSH_USER@$SSH_HOST:$release/"
+          ssh $ssh_options "$SSH_USER@$SSH_HOST" bash -s -- "$release" <<'REMOTE'
+          set -euo pipefail
+          release="$1"
+          base=/var/www/mind41-landing
+          test -s "$release/index.html"
+          nginx -t
+          old="$(readlink "$base/current" || true)"
+          if [ -n "$old" ]; then
+            ln -sfn "$old" "$base/previous"
+          fi
+          ln -s "$release" "$base/current.next"
+          mv -Tf "$base/current.next" "$base/current"
+          if ! curl --fail --silent --show-error --max-time 15 http://127.0.0.1:8088/ >/dev/null; then
+            if [ -n "$old" ]; then
+              ln -s "$old" "$base/current.rollback"
+              mv -Tf "$base/current.rollback" "$base/current"
+            else
+              unlink "$base/current"
+            fi
+            echo "Health check failed; activation reverted."
+            exit 1
+          fi
+          REMOTE
