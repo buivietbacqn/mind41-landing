@@ -1,0 +1,43 @@
+name: Check deployment server
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/check-server.yml']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify SSH and landing container
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variable in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            test -n "${!variable}" || { echo "::error::Missing $variable"; exit 1; }
+          done
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null
+          ssh -p 22 -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 "$SSH_USER@$SSH_HOST" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          command -v rsync >/dev/null
+          command -v curl >/dev/null
+          test "$(docker inspect -f '{{.State.Running}}' mind41-landing)" = true
+          docker exec mind41-landing nginx -t
+          test -d /var/www/mind41-landing/releases
+          status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://127.0.0.1:8088/)
+          case "$status" in
+            200|403|404) echo "SSH and container checks passed; HTTP response: $status" ;;
+            *) echo "Unexpected HTTP response: $status"; exit 1 ;;
+          esac
+          REMOTE
