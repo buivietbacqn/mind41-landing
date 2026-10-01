@@ -63,7 +63,15 @@ jobs:
             assert.equal(await page.locator('.modal').isVisible(),false);
             await page.locator('#faq details').nth(1).locator('summary').click();
             assert.equal(await page.locator('#faq details').nth(1).getAttribute('open'),'');
-            assert.equal(await page.locator('a[href="mailto:ict@mta.edu.vn"]').count(),1);
+            assert.equal(await page.locator('a[href="mailto:info@v41.vn"]').count(),2);
+            assert.match(await page.locator('.cta-meta').innerText(),/Công ty Cổ phần Công nghệ Việt V41/);
+            assert.match(await page.locator('.cta-meta').innerText(),/0111226605/);
+            assert.match(await page.locator('.cta-meta').innerText(),/91 Trần Duy Hưng, Hà Nội/);
+            await page.locator('.cta-meta').scrollIntoViewIfNeeded();
+            await page.waitForFunction(()=>[...document.querySelectorAll('.v41-mark img')].length===2&&[...document.querySelectorAll('.v41-mark img')].every(i=>i.complete&&i.naturalWidth>0));
+            await page.locator('.cta-panel').screenshot({path:'screenshots/company-mobile.png'});
+            await page.setViewportSize({width:1440,height:1000});
+            await page.locator('.cta-panel').screenshot({path:'screenshots/company-desktop.png'});
             assert.deepEqual(errors,[]);
             console.log('Live HTTP 200; desktop/mobile, menu, registration modal and FAQ checks passed.');
             await browser.close();
