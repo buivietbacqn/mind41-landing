@@ -1,0 +1,63 @@
+name: Verify live landing
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/verify-landing.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser checks
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify live page
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          mkdir -p screenshots
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch();
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            const response=await page.goto('http://'+process.env.SSH_HOST+':8088/',{waitUntil:'networkidle',timeout:30000});
+            assert.equal(response.status(),200);
+            assert.match(await page.title(),/intraMind/);
+            await page.screenshot({path:'screenshots/desktop.png',fullPage:true});
+            await page.setViewportSize({width:390,height:844});
+            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Mobile horizontal overflow');
+            await page.screenshot({path:'screenshots/mobile.png',fullPage:true});
+            await page.locator('.hamb').click();
+            assert.equal(await page.locator('#mobile-menu').isVisible(),true);
+            await page.locator('#mobile-menu [data-open]').click();
+            assert.equal(await page.locator('.modal').isVisible(),true);
+            assert.equal(await page.locator('#fullname').evaluate(e=>e===document.activeElement),true);
+            await page.screenshot({path:'screenshots/registration.png'});
+            await page.keyboard.press('Escape');
+            assert.equal(await page.locator('.modal').isVisible(),false);
+            await page.locator('#faq details').nth(1).locator('summary').click();
+            assert.equal(await page.locator('#faq details').nth(1).getAttribute('open'),'');
+            assert.equal(await page.locator('a[href="mailto:ict@mta.edu.vn"]').count(),1);
+            assert.deepEqual(errors,[]);
+            console.log('Live HTTP 200; desktop/mobile, menu, registration modal and FAQ checks passed.');
+            await browser.close();
+          })().catch(e=>{console.error(e.message);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: landing-screenshots
+          path: screenshots/
+          retention-days: 7
