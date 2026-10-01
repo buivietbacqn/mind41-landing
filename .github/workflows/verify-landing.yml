@@ -68,7 +68,7 @@ jobs:
             assert.match(await page.locator('.cta-meta').innerText(),/0111226605/);
             assert.match(await page.locator('.cta-meta').innerText(),/91 Trần Duy Hưng, Hà Nội/);
             await page.locator('.cta-meta').scrollIntoViewIfNeeded();
-            await page.waitForFunction(()=>[...document.querySelectorAll('.v41-mark img')].length===2&&[...document.querySelectorAll('.v41-mark img')].every(i=>i.complete&&i.naturalWidth>0));
+            await page.waitForFunction(()=>[...document.querySelectorAll('.v41-mark img')].length===1&&[...document.querySelectorAll('.v41-mark img')].every(i=>i.complete&&i.naturalWidth>0));
             await page.locator('.cta-panel').screenshot({path:'screenshots/company-mobile.png'});
             await page.setViewportSize({width:1440,height:1000});
             await page.locator('.cta-panel').screenshot({path:'screenshots/company-desktop.png'});
