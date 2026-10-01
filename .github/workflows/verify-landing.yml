@@ -93,8 +93,9 @@ jobs:
             await video.scrollIntoViewIfNeeded();
             await video.evaluate(v=>{v.load();});
             await page.waitForFunction(()=>document.querySelector('#mind41-intro').readyState>=2);
-            assert.equal(await video.evaluate(v=>Math.round(v.duration)),14);
-            await video.evaluate(v=>v.play());
+            assert.equal(await video.evaluate(v=>Math.round(v.duration)),10);
+            assert.equal(await video.evaluate(v=>v.muted),false);
+            await video.evaluate(v=>{v.muted=true;return v.play()});
             await page.waitForFunction(()=>document.querySelector('#mind41-intro').currentTime>0.3);
             await video.evaluate(v=>v.pause());
             await page.locator('.hero-film').screenshot({path:'screenshots/video-desktop.png'});
