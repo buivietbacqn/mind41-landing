@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>intraMind — Trợ lý ảo nội bộ</title>
+  <title>Mind41 — Trợ lý ảo nội bộ</title>
   <meta name="description" content="Trợ lý AI nội bộ triển khai local/on-premise, hỗ trợ hỏi đáp, tóm tắt, trích xuất, OCR và soạn thảo trên dữ liệu riêng của tổ chức." />
   <style>
     :root{
@@ -42,12 +42,21 @@
     button{font:inherit}section[id]{scroll-margin-top:84px}.hamb{background:none;border:0;color:white;font-size:26px;cursor:pointer}.close{background:none;border:0;color:#11213f}.radio-card input{width:auto}.radio-card:has(input:checked){border-color:#e0a13d;background:#fffaf0}#mobile-menu{position:fixed;top:68px;left:0;right:0;padding:20px;background:#06295a;color:white;z-index:49;box-shadow:var(--shadow)}#mobile-menu:not([hidden]){display:flex;flex-direction:column;gap:18px}.field:focus-within label{color:var(--blue)}:focus-visible{outline:3px solid #1677ff;outline-offset:3px}.security-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero h1{font-size:48px}.hero h1 span{font-size:30px;display:inline-block;margin-top:12px}.thumb{display:grid;place-items:center}.thumb:after{position:relative;z-index:1;color:#06295a;font-size:48px}.thumb:after{content:'▤ → ◇'}.thumb.t2:after{content:'⌕';font-size:80px}.thumb.t3:after{content:'▤';font-size:75px}.faq-visual{color:#1677ff;text-shadow:0 10px 24px #1677ff33}.glow-card .icon{background:#1677ff33}.tech{background-image:radial-gradient(ellipse at 45% 110%,#1677ff66,transparent 60%),linear-gradient(135deg,#041a3d,#0a2f69 60%,#04152f)}
     @media(max-width:600px){.hero h1{font-size:32px}.hero h1 span{font-size:23px}.security-grid{grid-template-columns:1fr}.nav .brand{font-size:18px}h2{font-size:28px}.mockui .screen{padding:12px}.modal-box h2{padding-right:25px}.close{right:12px}.radio-grid{grid-template-columns:1fr}.tech-intro{padding:0}.tech-card{padding:22px}.hero-meta{gap:10px}.hero-meta span{font-size:12px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+.logo{width:46px;height:46px;flex-shrink:0;box-shadow:0 4px 16px #e6b85c40,inset 0 2px 4px #fff9;font-size:26px}
+.brand{gap:12px}.nav{height:78px}#mobile-menu{top:78px}
+.icon{width:80px;height:80px;border-radius:24px;font-size:46px;margin-bottom:18px;flex-shrink:0;background:linear-gradient(145deg,#ffffff24,#ffffff08);border:1px solid #ffffff30;box-shadow:inset 0 2px 4px #ffffff20,0 10px 24px #00163326;line-height:1}
+.glow-card .icon{width:104px;height:104px;font-size:64px;border-radius:30px;background:radial-gradient(circle at 25% 15%,#65baff55,transparent 65%),linear-gradient(145deg,#174e9c,#0a2c62);border:1px solid #73baff66;box-shadow:inset 0 2px 3px #ffffff25,0 12px 28px #00122a66,0 0 32px #1677ff30;text-shadow:0 5px 12px #00152b66}
+.glow-card{padding:30px 22px}.glow-card strong{font-size:19px}.feature-badges{max-width:100%}
+.aud-card .icon{width:84px;height:84px;font-size:48px}.deploy-card .icon{width:96px;height:96px;font-size:54px;border-color:#bfd5f3;color:#06295a}
+.secure-item i{display:grid;place-items:center;width:52px;height:52px;flex:0 0 52px;border-radius:16px;background:linear-gradient(145deg,#eff6ff,#dbeaff);font-size:32px;line-height:1}
+@media(max-width:600px){.glow-card .icon{width:112px;height:112px;font-size:70px}.glow-card{padding:28px 20px}.brand{font-size:23px}.nav .brand{font-size:22px}.feature-badges{gap:20px}.logo{width:44px;height:44px}}
   </style>
 </head>
 <body>
 <header class="topbar">
   <div class="container nav">
-    <a class="brand" href="#top"><span class="logo">◉</span><span>intraMind<small style="display:block;font-size:10px;font-weight:600;opacity:.75">Trợ lý ảo nội bộ</small></span></a>
+    <a class="brand" href="#top"><span class="logo">◉</span><span>Mind41<small style="display:block;font-size:10px;font-weight:600;opacity:.75">Trợ lý ảo nội bộ</small></span></a>
     <nav class="navlinks"><a href="#features">Tính năng</a><a href="#technology">Công nghệ</a><a href="#security">Bảo mật</a><a href="#faq">FAQ</a><button class="btn btn-gold" data-open>Đăng ký dùng thử →</button></nav>
     <button class="hamb" aria-label="Mở menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
   </div>
@@ -57,8 +66,8 @@
 <section class="hero">
   <div class="container">
     <div class="hero-chip">Trợ lý ảo AI · Vận hành hoàn toàn nội bộ</div>
-    <h1>intraMind - Trợ lý ảo nội bộ<br><span>Thông minh - An toàn - Tin cậy</span></h1>
-    <p>intraMind là bộ công cụ trợ lý AI cho tổ chức có dữ liệu nhạy cảm: hỏi đáp, tóm tắt, tổng hợp và soạn thảo văn bản ngay trong môi trường nội bộ, hoàn toàn không kết nối Internet.</p>
+    <h1>Mind41 - Trợ lý ảo nội bộ<br><span>Thông minh - An toàn - Tin cậy</span></h1>
+    <p>Mind41 là bộ công cụ trợ lý AI cho tổ chức có dữ liệu nhạy cảm: hỏi đáp, tóm tắt, tổng hợp và soạn thảo văn bản ngay trong môi trường nội bộ, hoàn toàn không kết nối Internet.</p>
     <div class="hero-actions"><button class="btn btn-primary" data-open>Đăng ký dùng thử →</button><a class="btn btn-light" href="#features">Khám phá tính năng</a></div>
     <div class="hero-meta"><span>🇻🇳 Make in Vietnam</span><span>⚡ Không kết nối Internet</span><span>🛡️ 100% Internal</span></div>
   </div>
@@ -67,7 +76,7 @@
 <section class="showcase">
   <div class="container showcase-grid">
     <div>
-      <div class="brand" style="margin-bottom:24px"><span class="logo">◉</span><span>intraMind<small style="display:block;font-size:12px;font-weight:600;opacity:.75">Trợ lý ảo nội bộ</small></span></div>
+      <div class="brand" style="margin-bottom:24px"><span class="logo">◉</span><span>Mind41<small style="display:block;font-size:12px;font-weight:600;opacity:.75">Trợ lý ảo nội bộ</small></span></div>
       <div class="feature-badges">
         <div class="glow-card"><div class="icon">🧠</div><strong>Thông minh</strong><div class="muted" style="color:#b8d0f4;font-size:13px;margin-top:6px">Hiểu ngữ cảnh và dữ liệu nội bộ</div></div>
         <div class="glow-card"><div class="icon">🛡️</div><strong>An toàn</strong><div class="muted" style="color:#b8d0f4;font-size:13px;margin-top:6px">Không đưa dữ liệu ra ngoài</div></div>
@@ -76,7 +85,7 @@
     </div>
     <div class="mockui">
       <div class="screen">
-        <div style="display:flex;gap:10px;align-items:center;margin-bottom:18px"><div style="width:34px;height:34px;border-radius:10px;background:#2e80ff"></div><b>intraMind Workspace</b></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:18px"><div style="width:34px;height:34px;border-radius:10px;background:#2e80ff"></div><b>Mind41 Workspace</b></div>
         <div class="bar w90"></div><div class="bar w70"></div><div class="bar w50"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px"><div style="height:90px;border-radius:14px;background:#e6eef9"></div><div style="height:90px;border-radius:14px;background:#d6e7ff"></div></div>
       </div>
@@ -164,7 +173,7 @@
   <div class="container faq">
     <div><div class="eyebrow">Câu hỏi thường gặp</div><h2>Những điều bạn có thể đang băn khoăn</h2><div class="faq-visual">❓</div></div>
     <div>
-      <details open><summary>intraMind có cần kết nối Internet không?</summary><p>Không. Hệ thống có thể vận hành 100% offline; toàn bộ dữ liệu, LLM, vector DB và pipeline xử lý được triển khai tại chỗ trên máy cá nhân hoặc server nội bộ.</p></details>
+      <details open><summary>Mind41 có cần kết nối Internet không?</summary><p>Không. Hệ thống có thể vận hành 100% offline; toàn bộ dữ liệu, LLM, vector DB và pipeline xử lý được triển khai tại chỗ trên máy cá nhân hoặc server nội bộ.</p></details>
       <details><summary>Dữ liệu của tôi có bị gửi ra ngoài không?</summary><p>Không bắt buộc. Với mô hình on-premise, dữ liệu được xử lý trong hạ tầng của đơn vị và có thể cô lập hoàn toàn khỏi Internet.</p></details>
       <details><summary>Những định dạng tài liệu nào được hỗ trợ?</summary><p>Thiết kế hỗ trợ PDF, DOCX, TXT, ảnh, tài liệu scan và có thể mở rộng thêm theo yêu cầu tích hợp.</p></details>
       <details><summary>Chi phí sử dụng như thế nào?</summary><p>Chi phí phụ thuộc mô hình triển khai, cấu hình hạ tầng, số lượng người dùng và mức độ tùy biến.</p></details>
@@ -176,13 +185,13 @@
 
 <section class="deploy">
   <div class="container">
-    <div class="section-head"><div class="eyebrow">Mô hình triển khai</div><h2>Triển khai nội bộ</h2><p class="muted">Đăng ký trải nghiệm intraMind hoặc liên hệ để được tư vấn phương án phù hợp với hạ tầng nội bộ của đơn vị.</p></div>
+    <div class="section-head"><div class="eyebrow">Mô hình triển khai</div><h2>Triển khai nội bộ</h2><p class="muted">Đăng ký trải nghiệm Mind41 hoặc liên hệ để được tư vấn phương án phù hợp với hạ tầng nội bộ của đơn vị.</p></div>
     <div class="deploy-options">
       <div class="deploy-card"><div class="icon" style="background:#e9f2ff">🖥️</div><h3>Máy tính cá nhân</h3><p class="muted">Cài trực tiếp trên máy người dùng. Phù hợp nhóm nhỏ hoặc dữ liệu cá nhân hóa cao.</p></div>
       <div class="deploy-card"><div class="icon" style="background:#e9f2ff">🗄️</div><h3>Server cho đơn vị</h3><p class="muted">Triển khai tập trung cho toàn đơn vị với quản trị user, phân quyền và kho tri thức dùng chung.</p></div>
     </div>
     <div class="cta-panel">
-      <div class="eyebrow" style="color:#f4ca70">Sẵn sàng triển khai</div><h2>Đưa AI vào tổ chức của bạn - an toàn từ ngày đầu</h2><p style="color:#c7d6ef;max-width:720px;margin:0 auto 18px">Đăng ký trải nghiệm intraMind hoặc liên hệ để được tư vấn phương án triển khai phù hợp với hạ tầng nội bộ của đơn vị.</p>
+      <div class="eyebrow" style="color:#f4ca70">Sẵn sàng triển khai</div><h2>Đưa AI vào tổ chức của bạn - an toàn từ ngày đầu</h2><p style="color:#c7d6ef;max-width:720px;margin:0 auto 18px">Đăng ký trải nghiệm Mind41 hoặc liên hệ để được tư vấn phương án triển khai phù hợp với hạ tầng nội bộ của đơn vị.</p>
       <div class="hero-actions"><button class="btn btn-gold" data-open>Đăng ký dùng thử →</button><a class="btn btn-light" href="mailto:ict@mta.edu.vn">Liên hệ triển khai</a></div>
       <div class="cta-meta"><div><small style="color:#71a8ff">ĐƠN VỊ PHÁT TRIỂN</small><strong style="display:block;margin-top:5px">Viện Công nghệ Thông tin & Truyền thông</strong></div><div><small style="color:#71a8ff">TƯ VẤN TRIỂN KHAI</small><strong style="display:block;margin-top:5px">Liên hệ Viện CNTT&TT</strong></div><div><small style="color:#71a8ff">ĐỊA CHỈ</small><strong style="display:block;margin-top:5px">236 Đường Hoàng Quốc Việt, Hà Nội</strong></div></div>
     </div>
@@ -190,11 +199,11 @@
 </section>
 </main>
 
-<footer><div class="container foot"><div class="brand"><span class="logo">◉</span><span>intraMind<small style="display:block;font-size:10px;font-weight:600;opacity:.7">Bộ công cụ trợ lý ảo nội bộ</small></span></div><div>© 2026 intraMind · Học viện Kỹ thuật Quân sự</div></div></footer>
+<footer><div class="container foot"><div class="brand"><span class="logo">◉</span><span>Mind41<small style="display:block;font-size:10px;font-weight:600;opacity:.7">Bộ công cụ trợ lý ảo nội bộ</small></span></div><div>© 2026 Mind41 · Học viện Kỹ thuật Quân sự</div></div></footer>
 
 <div class="modal" id="modal">
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="register-title"><button class="close" data-close aria-label="Đóng">×</button>
-    <h2 id="register-title" style="font-size:30px">Đăng ký dùng thử intraMind</h2><p style="color:#c28425;font-style:italic">Điền thông tin và gửi yêu cầu qua ứng dụng email của bạn.</p>
+    <h2 id="register-title" style="font-size:30px">Đăng ký dùng thử Mind41</h2><p style="color:#c28425;font-style:italic">Điền thông tin và gửi yêu cầu qua ứng dụng email của bạn.</p>
     <form id="registration" class="form-grid">
       <div class="field full"><label for="fullname">Họ và Tên *</label><input id="fullname" name="fullname" required autocomplete="name" placeholder="Nhập họ và tên"></div>
       <div class="field full"><label for="unit">Đơn vị</label><select id="unit" name="unit"><option>Chọn đơn vị</option><option>Cơ quan nhà nước</option><option>Quốc phòng</option><option>Doanh nghiệp</option><option>Viện nghiên cứu / đào tạo</option></select></div>
@@ -202,7 +211,7 @@
       <div class="field"><label for="phone">Số điện thoại *</label><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="Nhập số điện thoại"></div>
       <div class="field full"><label>Mô hình triển khai mong muốn</label><div class="radio-grid"><label class="radio-card"><input type="radio" name="deployment" value="Máy tính cá nhân" checked> <b>Máy tính cá nhân</b><br><span class="muted">Cài trực tiếp trên máy người dùng</span></label><label class="radio-card"><input type="radio" name="deployment" value="Server cho đơn vị"> <b>Server cho đơn vị</b><br><span class="muted">Triển khai tập trung cho toàn đơn vị</span></label></div></div>
       <div class="field full"><label for="note">Ghi chú (không bắt buộc)</label><textarea id="note" name="note" placeholder="Nhu cầu, quy mô người dùng, thời gian dự kiến..."></textarea></div>
-      <div class="full"><button class="btn btn-primary submit">Gửi qua email →</button><p class="muted" style="margin-top:12px">Bằng việc gửi thông tin, bạn đồng ý để đội ngũ intraMind liên hệ tư vấn triển khai.</p></div>
+      <div class="full"><button class="btn btn-primary submit">Gửi qua email →</button><p class="muted" style="margin-top:12px">Bằng việc gửi thông tin, bạn đồng ý để đội ngũ Mind41 liên hệ tư vấn triển khai.</p></div>
     </form>
   </div>
 </div>
@@ -214,7 +223,7 @@ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModal);
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
 document.addEventListener('keydown',e=>{if(!modal.classList.contains('show'))return;if(e.key==='Escape')closeModal();if(e.key==='Tab'){const nodes=[...modal.querySelectorAll('button,input,select,textarea')];const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 const menu=document.getElementById('mobile-menu'),toggle=document.querySelector('.hamb');toggle.onclick=()=>{menu.hidden=!menu.hidden;toggle.setAttribute('aria-expanded',String(!menu.hidden))};menu.querySelectorAll('a,button').forEach(a=>a.addEventListener('click',()=>{menu.hidden=true;toggle.setAttribute('aria-expanded','false')}));
-document.getElementById('registration').addEventListener('submit',e=>{e.preventDefault();const d=new FormData(e.target);const body=['Đăng ký dùng thử intraMind','Họ tên: '+d.get('fullname'),'Đơn vị: '+d.get('unit'),'Email: '+d.get('email'),'Điện thoại: '+d.get('phone'),'Mô hình: '+d.get('deployment'),'Ghi chú: '+d.get('note')].join('\n');window.location.href='mailto:ict@mta.edu.vn?subject='+encodeURIComponent('Đăng ký dùng thử intraMind')+'&body='+encodeURIComponent(body)});
+document.getElementById('registration').addEventListener('submit',e=>{e.preventDefault();const d=new FormData(e.target);const body=['Đăng ký dùng thử Mind41','Họ tên: '+d.get('fullname'),'Đơn vị: '+d.get('unit'),'Email: '+d.get('email'),'Điện thoại: '+d.get('phone'),'Mô hình: '+d.get('deployment'),'Ghi chú: '+d.get('note')].join('\n');window.location.href='mailto:ict@mta.edu.vn?subject='+encodeURIComponent('Đăng ký dùng thử Mind41')+'&body='+encodeURIComponent(body)});
 </script>
 </body>
 </html>
