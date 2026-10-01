@@ -69,7 +69,7 @@ jobs:
           release="$1"
           base=/var/www/mind41-landing
           test -s "$release/index.html"
-          nginx -t
+          docker exec mind41-landing nginx -t
           old="$(readlink "$base/current" || true)"
           if [ -n "$old" ]; then
             ln -sfn "$old" "$base/previous"
