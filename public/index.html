@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>intraMind — Trợ lý ảo nội bộ</title>
+  <meta name="description" content="Trợ lý AI nội bộ triển khai local/on-premise, hỗ trợ hỏi đáp, tóm tắt, trích xuất, OCR và soạn thảo trên dữ liệu riêng của tổ chức." />
+  <style>
+    :root{
+      --navy:#06295a; --navy-2:#081d45; --blue:#1677ff; --light:#eef5ff; --light2:#f7faff;
+      --gold:#e6b85c; --gold2:#f2d88f; --text:#11213f; --muted:#6d7a96; --line:#dce6f5;
+      --white:#fff; --shadow:0 12px 36px rgba(10,41,87,.12); --radius:22px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:#fff;line-height:1.55}
+    a{text-decoration:none;color:inherit} img{max-width:100%;display:block}
+    .container{width:min(1180px,calc(100% - 40px));margin:auto}
+    .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#b7852f;font-weight:800}
+    h1,h2,h3{line-height:1.15;margin:0 0 16px} h1{font-size:58px} h2{font-size:40px} h3{font-size:22px}
+    p{margin:0 0 14px}.muted{color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:12px;font-weight:800;border:1px solid transparent;transition:.2s;cursor:pointer}
+    .btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(4,37,82,.25)}
+    .btn-light{background:#fff;border-color:#cfd9eb}.btn-gold{background:linear-gradient(180deg,#fff4c7,#f1cb6d);color:#5f4300}
+    .topbar{position:sticky;top:0;z-index:50;background:rgba(6,41,90,.97);color:#fff;backdrop-filter:blur(10px)}
+    .nav{height:68px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px}.logo{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#fbe8a4,#cda847);color:#0c2f64;font-weight:900;border:2px solid #fff6cf}.navlinks{display:flex;align-items:center;gap:28px;font-size:14px}.navlinks a{opacity:.9}.navlinks a:hover{opacity:1}.hamb{display:none}
+    .hero{background:radial-gradient(circle at 80% 20%,rgba(22,119,255,.10),transparent 28%),linear-gradient(180deg,#f2f7ff 0,#fff 100%);padding:84px 0 72px;overflow:hidden;position:relative}.hero:after{content:"";position:absolute;inset:auto -90px -100px auto;width:420px;height:420px;border:1px solid #dfe9f8;border-radius:50%;box-shadow:0 0 0 50px #f8fbff,0 0 0 100px #edf4ff}
+    .hero .container{position:relative;z-index:1;text-align:center}.hero-chip{display:inline-flex;padding:7px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:13px;color:#55637d;margin-bottom:16px}.hero h1{max-width:900px;margin:0 auto 16px;color:#2e155f}.hero h1 span{color:#ca7f00}.hero p{max-width:760px;margin:0 auto 24px;color:#66728a;font-size:18px}.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.hero-meta{margin-top:18px;display:flex;justify-content:center;gap:18px;flex-wrap:wrap;color:#73809a;font-size:13px}
+    .showcase{background:linear-gradient(135deg,#0b2c64,#001530 65%,#021944);color:#fff;padding:62px 0;position:relative;overflow:hidden}.showcase:before{content:"";position:absolute;left:-10%;right:-10%;bottom:-85px;height:180px;background:radial-gradient(ellipse at center,#0d8cff 0,#063f8c 25%,transparent 70%);filter:blur(18px);opacity:.8}.showcase-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:52px;align-items:center;position:relative;z-index:1}.feature-badges{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:470px}.glow-card{padding:26px;border-radius:20px;background:linear-gradient(145deg,rgba(27,117,255,.35),rgba(5,32,77,.75));border:1px solid rgba(103,176,255,.45);box-shadow:0 0 30px rgba(25,128,255,.23) inset,0 10px 26px rgba(0,0,0,.24);text-align:center}.glow-card.big{grid-column:1/3}.icon{width:48px;height:48px;margin:auto auto 12px;border-radius:16px;background:#fff1;display:grid;place-items:center;font-size:26px}.mockui{background:linear-gradient(145deg,#d9edff,#87beff);border:8px solid #a9d0ff;border-radius:28px;padding:18px;transform:rotate(4deg);box-shadow:0 28px 60px rgba(0,0,0,.35);position:relative}.mockui .screen{background:#f8fbff;border-radius:16px;padding:18px;color:#24406c}.bar{height:12px;border-radius:10px;background:#d4e1f2;margin:10px 0}.bar.w70{width:70%}.bar.w50{width:50%}.bar.w90{width:90%}
+    .chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:20px 0}.chip{border:1px solid #d6e0ef;border-radius:999px;padding:7px 12px;font-size:12px;color:#5a6780;background:#fff}
+    section{padding:82px 0}.split{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}.pain-list{display:grid;gap:14px}.pain{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:#fff}.pain strong{display:block;color:#b17915;margin-bottom:4px}.security-visual{min-height:390px;border-radius:28px;background:linear-gradient(135deg,#031b3e,#063b86);position:relative;overflow:hidden;box-shadow:var(--shadow)}.security-visual:before{content:"🔒";position:absolute;font-size:98px;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 0 25px #28a0ff)}.security-visual:after{content:"";position:absolute;inset:35px;border:1px solid rgba(84,170,255,.35);border-radius:30px;box-shadow:0 0 0 38px rgba(30,108,205,.08),0 0 0 76px rgba(30,108,205,.05)}
+    .soft{background:#f0f6ff}.section-head{text-align:center;max-width:820px;margin:0 auto 40px}.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 8px 22px rgba(26,61,115,.06)}.thumb{height:170px;border-radius:15px;margin-bottom:14px;background:linear-gradient(145deg,#dbeaff,#9fc8ff);position:relative;overflow:hidden}.thumb:before{content:"";position:absolute;inset:24px;background:#fff;border-radius:14px;box-shadow:0 10px 25px #5877aa33}.thumb.t2{background:linear-gradient(145deg,#0c3472,#2384d9)}.thumb.t3{background:linear-gradient(145deg,#dbe4e0,#9fc5ba)}.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tag{font-size:10px;padding:4px 8px;background:#fff6df;color:#9b6b13;border-radius:999px;border:1px solid #f0ddb4}
+    .timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin-top:36px}.timeline:before{content:"";position:absolute;top:20px;left:8%;right:8%;height:2px;background:#d7deea}.step{position:relative;text-align:center;padding:0 10px}.step-num{position:relative;z-index:2;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;background:#f2cb6c;color:#725100;font-weight:900;border:4px solid #fff}.step small{display:block;color:#8d97aa;text-transform:uppercase;font-size:10px}.step strong{font-size:13px;display:block;margin-top:5px}
+    .tech{background:linear-gradient(135deg,#041a3d,#0a2f69 60%,#04152f);color:#fff;overflow:hidden}.tech-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:22px;align-items:stretch}.tech-intro{padding:20px}.tech-card{background:#fff;color:#1f2b46;border-radius:18px;padding:24px;box-shadow:var(--shadow)}.tech-card .bigtext{font-size:34px;color:#c7810a;font-weight:900}.mini-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.mini-tags span{font-size:11px;border:1px solid #ead9b3;padding:4px 7px;border-radius:999px;color:#a57116}
+    .security-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.secure-item{border:1px solid #d8e4f4;border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}.secure-item i{font-style:normal;font-size:24px}.secure-item b{display:block;margin-bottom:3px}
+    .audience{background:linear-gradient(135deg,#071a3a,#0a2e68);color:#fff}.aud-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.aud-card{padding:20px;border:1px solid rgba(91,155,255,.28);background:rgba(7,27,62,.65);border-radius:16px}.aud-card .icon{margin:0 0 12px}.aud-card h3{font-size:17px;color:#9fd0ff}.aud-card p{font-size:13px;color:#d4def0}
+    .faq{display:grid;grid-template-columns:.8fr 1.2fr;gap:46px;align-items:start}.faq-visual{font-size:120px;text-align:center;padding:40px}.faq details{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:10px;background:#fff}.faq summary{font-weight:800;cursor:pointer}.faq details[open]{border-color:#edc36e}.faq details p{padding-top:10px;color:#687590}
+    .deploy{background:#f2f7ff}.deploy-options{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0}.deploy-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}.cta-panel{background:radial-gradient(circle at 80% 80%,rgba(42,122,255,.35),transparent 32%),linear-gradient(135deg,#071a40,#111d4a);color:#fff;padding:42px;border-radius:24px;text-align:center;box-shadow:var(--shadow)}.cta-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px;text-align:left}.cta-meta div{padding:16px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.10)}
+    footer{background:#052c63;color:#dce8fa;padding:28px 0}.foot{display:flex;justify-content:space-between;gap:30px;align-items:center;font-size:13px}.foot .brand{color:#fff}
+    .modal{position:fixed;inset:0;background:rgba(9,14,23,.72);display:none;place-items:center;z-index:100;padding:20px}.modal.show{display:grid}.modal-box{width:min(780px,100%);background:#fff;border-radius:24px;padding:30px;position:relative;max-height:92vh;overflow:auto}.close{position:absolute;right:22px;top:18px;font-size:30px;cursor:pointer}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-grid .full{grid-column:1/-1}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:13px 14px;border-radius:12px;border:1px solid #cbd8eb;font:inherit}.field textarea{min-height:90px}.radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.radio-card{border:1px solid #cdd9ec;border-radius:14px;padding:14px}.radio-card.active{border-color:#e0a13d;background:#fffaf0}.submit{width:100%;justify-content:center;margin-top:8px}
+    @media(max-width:900px){h1{font-size:42px}h2{font-size:32px}.navlinks{display:none}.hamb{display:block}.showcase-grid,.split,.faq{grid-template-columns:1fr}.cards3{grid-template-columns:1fr}.tech-grid{grid-template-columns:1fr}.aud-grid{grid-template-columns:1fr 1fr}.timeline{grid-template-columns:1fr;gap:18px}.timeline:before{display:none}.step{text-align:left;display:grid;grid-template-columns:48px 1fr;gap:8px}.step-num{margin:0}.deploy-options,.cta-meta{grid-template-columns:1fr}.foot{flex-direction:column;align-items:flex-start}.form-grid,.radio-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}}
+    @media(max-width:600px){.container{width:min(100% - 26px,1180px)}.hero{padding-top:58px}.hero h1{font-size:34px}.hero p{font-size:16px}.aud-grid{grid-template-columns:1fr}.feature-badges{grid-template-columns:1fr}.glow-card.big{grid-column:auto}.showcase{padding:48px 0}.mockui{transform:none}.cta-panel{padding:28px 18px}.modal-box{padding:22px 16px}}
+  
+    button{font:inherit}section[id]{scroll-margin-top:84px}.hamb{background:none;border:0;color:white;font-size:26px;cursor:pointer}.close{background:none;border:0;color:#11213f}.radio-card input{width:auto}.radio-card:has(input:checked){border-color:#e0a13d;background:#fffaf0}#mobile-menu{position:fixed;top:68px;left:0;right:0;padding:20px;background:#06295a;color:white;z-index:49;box-shadow:var(--shadow)}#mobile-menu:not([hidden]){display:flex;flex-direction:column;gap:18px}.field:focus-within label{color:var(--blue)}:focus-visible{outline:3px solid #1677ff;outline-offset:3px}.security-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero h1{font-size:48px}.hero h1 span{font-size:30px;display:inline-block;margin-top:12px}.thumb{display:grid;place-items:center}.thumb:after{position:relative;z-index:1;color:#06295a;font-size:48px}.thumb:after{content:'▤ → ◇'}.thumb.t2:after{content:'⌕';font-size:80px}.thumb.t3:after{content:'▤';font-size:75px}.faq-visual{color:#1677ff;text-shadow:0 10px 24px #1677ff33}.glow-card .icon{background:#1677ff33}.tech{background-image:radial-gradient(ellipse at 45% 110%,#1677ff66,transparent 60%),linear-gradient(135deg,#041a3d,#0a2f69 60%,#04152f)}
+    @media(max-width:600px){.hero h1{font-size:32px}.hero h1 span{font-size:23px}.security-grid{grid-template-columns:1fr}.nav .brand{font-size:18px}h2{font-size:28px}.mockui .screen{padding:12px}.modal-box h2{padding-right:25px}.close{right:12px}.radio-grid{grid-template-columns:1fr}.tech-intro{padding:0}.tech-card{padding:22px}.hero-meta{gap:10px}.hero-meta span{font-size:12px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="#top"><span class="logo">◉</span><span>intraMind<small style="display:block;font-size:10px;font-weight:600;opacity:.75">Trợ lý ảo nội bộ</small></span></a>
+    <nav class="navlinks"><a href="#features">Tính năng</a><a href="#technology">Công nghệ</a><a href="#security">Bảo mật</a><a href="#faq">FAQ</a><button class="btn btn-gold" data-open>Đăng ký dùng thử →</button></nav>
+    <button class="hamb" aria-label="Mở menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
+  </div>
+</header><nav id="mobile-menu" hidden><a href="#features">Tính năng</a><a href="#technology">Công nghệ</a><a href="#security">Bảo mật</a><a href="#faq">FAQ</a><button class="btn btn-gold" data-open>Đăng ký dùng thử →</button></nav>
+
+<main id="top">
+<section class="hero">
+  <div class="container">
+    <div class="hero-chip">Trợ lý ảo AI · Vận hành hoàn toàn nội bộ</div>
+    <h1>intraMind - Trợ lý ảo nội bộ<br><span>Thông minh - An toàn - Tin cậy</span></h1>
+    <p>intraMind là bộ công cụ trợ lý AI cho tổ chức có dữ liệu nhạy cảm: hỏi đáp, tóm tắt, tổng hợp và soạn thảo văn bản ngay trong môi trường nội bộ, hoàn toàn không kết nối Internet.</p>
+    <div class="hero-actions"><button class="btn btn-primary" data-open>Đăng ký dùng thử →</button><a class="btn btn-light" href="#features">Khám phá tính năng</a></div>
+    <div class="hero-meta"><span>🇻🇳 Make in Vietnam</span><span>⚡ Không kết nối Internet</span><span>🛡️ 100% Internal</span></div>
+  </div>
+</section>
+
+<section class="showcase">
+  <div class="container showcase-grid">
+    <div>
+      <div class="brand" style="margin-bottom:24px"><span class="logo">◉</span><span>intraMind<small style="display:block;font-size:12px;font-weight:600;opacity:.75">Trợ lý ảo nội bộ</small></span></div>
+      <div class="feature-badges">
+        <div class="glow-card"><div class="icon">🧠</div><strong>Thông minh</strong><div class="muted" style="color:#b8d0f4;font-size:13px;margin-top:6px">Hiểu ngữ cảnh và dữ liệu nội bộ</div></div>
+        <div class="glow-card"><div class="icon">🛡️</div><strong>An toàn</strong><div class="muted" style="color:#b8d0f4;font-size:13px;margin-top:6px">Không đưa dữ liệu ra ngoài</div></div>
+        <div class="glow-card big"><div class="icon">🤝</div><strong>Tin cậy</strong><div class="muted" style="color:#b8d0f4;font-size:13px;margin-top:6px">Kiểm soát, audit và triển khai tại chỗ</div></div>
+      </div>
+    </div>
+    <div class="mockui">
+      <div class="screen">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:18px"><div style="width:34px;height:34px;border-radius:10px;background:#2e80ff"></div><b>intraMind Workspace</b></div>
+        <div class="bar w90"></div><div class="bar w70"></div><div class="bar w50"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px"><div style="height:90px;border-radius:14px;background:#e6eef9"></div><div style="height:90px;border-radius:14px;background:#d6e7ff"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="chips container"><span class="chip">OSED</span><span class="chip">OSEP</span><span class="chip">OSWE</span><span class="chip">CHE</span><span class="chip">CHFI</span><span class="chip">Các tiêu chuẩn ATTT trong nước và quốc tế</span></div>
+
+<section>
+  <div class="container split">
+    <div>
+      <div class="eyebrow">Bối cảnh & tầm quan trọng</div>
+      <h2>Cần AI mạnh - nhưng không đánh đổi bằng dữ liệu.</h2>
+      <p class="muted">Trong nhiều tổ chức, dữ liệu nội bộ là tài sản quan trọng nhất. Việc dùng AI công cộng tạo ra rủi ro về bảo mật, tuân thủ và kiểm soát luồng dữ liệu.</p>
+      <div class="pain-list">
+        <div class="pain"><strong>Chi phí tối ưu</strong>Chỉ chi trả phần đầu tư hạ tầng nội bộ, không phụ thuộc hoàn toàn vào chi phí API theo token.</div>
+        <div class="pain"><strong>An toàn thông tin</strong>Giảm thiểu nguy cơ rò rỉ, đảm bảo dữ liệu nhạy cảm không rời khỏi hệ thống.</div>
+        <div class="pain"><strong>Chủ động vận hành</strong>Không phụ thuộc kết nối Internet, phù hợp các mạng kín và môi trường hạn chế truy cập.</div>
+      </div>
+    </div>
+    <div class="security-visual"></div>
+  </div>
+</section>
+
+<section class="soft" id="features">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">3 nhóm chức năng cốt lõi</div><h2>Một trợ lý, ba năng lực xuyên suốt vòng đời tài liệu</h2><p class="muted">Từ tóm tắt, tra cứu đến soạn thảo – tất cả trên chính kho dữ liệu nội bộ của bạn.</p></div>
+    <div class="cards3">
+      <article class="card"><div class="thumb"></div><div class="tags"><span class="tag">Trích xuất</span><span class="tag">Trực quan</span><span class="tag">Mind map</span></div><h3>Tóm tắt & Trích xuất</h3><p class="muted">Tự động đọc, tóm tắt, bóc tách trường dữ liệu quan trọng và dựng bản đồ tư duy từ tài liệu dài.</p></article>
+      <article class="card"><div class="thumb t2"></div><div class="tags"><span class="tag">Ngôn ngữ tự nhiên</span><span class="tag">Trích dẫn nguồn</span></div><h3>Hỏi đáp & Tra cứu</h3><p class="muted">Truy vấn tri thức tức thời từ kho dữ liệu nội bộ với phản hồi có căn cứ, minh bạch và truy vết được nguồn.</p></article>
+      <article class="card"><div class="thumb t3"></div><div class="tags"><span class="tag">Tổng hợp</span><span class="tag">Định dạng mẫu</span></div><h3>Sáng tạo & Soạn thảo</h3><p class="muted">Tổng hợp đa văn bản, tạo báo cáo, dự thảo, công văn hoặc tài liệu theo template nghiệp vụ có sẵn.</p></article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">Cá nhân hóa theo yêu cầu</div><h2>Không chỉ là sản phẩm có sẵn<br>mà còn phát triển các chức năng được cá nhân hóa</h2><p class="muted">Đồng hành theo quy trình rõ ràng, từ phân tích nhu cầu đến bàn giao và bảo hành.</p></div>
+    <div class="timeline">
+      <div class="step"><div class="step-num">1</div><div><small>Bước 1</small><strong>Phân tích yêu cầu</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div><small>Bước 2</small><strong>Ước tính khối lượng & thời gian</strong></div></div>
+      <div class="step"><div class="step-num">3</div><div><small>Bước 3</small><strong>Xây dựng, kiểm thử, tối ưu hóa</strong></div></div>
+      <div class="step"><div class="step-num">4</div><div><small>Bước 4</small><strong>Tích hợp tính năng vào sản phẩm</strong></div></div>
+      <div class="step"><div class="step-num">5</div><div><small>Bước 5</small><strong>Bàn giao & bảo hành</strong></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="tech" id="technology">
+  <div class="container tech-grid">
+    <div class="tech-intro"><div class="eyebrow" style="color:#f3ca73">Ưu thế công nghệ</div><h2>Kiến trúc đặt an toàn lên trước không cắt giảm năng lực</h2><p style="color:#bfd1ec">Toàn bộ pipeline AI có thể vận hành trong hạ tầng riêng của tổ chức.</p></div>
+    <div class="tech-card"><div class="bigtext">100% <small style="font-size:15px;color:#7a859a">offline</small></div><h3>Kiến trúc Cục bộ (Local)</h3><p class="muted">LLM, vector DB, embedding, OCR và các thành phần xử lý đều chạy tại chỗ. Không bắt buộc Internet.</p></div>
+    <div class="tech-card"><div class="bigtext">OCR <small style="font-size:15px;color:#7a859a">đa định dạng</small></div><h3>Xử lý đa phương thức</h3><p class="muted">Tích hợp OCR thông minh để xử lý hồ sơ quét, ảnh và tài liệu phi cấu trúc.</p><div class="mini-tags"><span>PDF</span><span>DOCX</span><span>TXT</span><span>SCAN</span><span>IMAGE</span></div></div>
+  </div>
+</section>
+
+<section id="security">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">Bảo mật & tuân thủ</div><h2>An toàn thông tin là nền móng, không phải tính năng bổ sung</h2><p class="muted">Mọi lớp bảo vệ được thiết kế cho dữ liệu nhạy cảm và môi trường kiểm soát nghiêm ngặt.</p></div>
+    <div class="security-grid">
+      <div class="secure-item"><i>🛡️</i><div><b>Tuân thủ tiêu chuẩn ATTT</b><span class="muted">Đáp ứng các tiêu chuẩn an toàn thông tin trong nước và quốc tế.</span></div></div>
+      <div class="secure-item"><i>🔐</i><div><b>Mã hóa cơ sở dữ liệu</b><span class="muted">Dữ liệu được mã hóa khi lưu trữ và trong các luồng trao đổi nội bộ.</span></div></div>
+      <div class="secure-item"><i>🧬</i><div><b>Giám sát tính toàn vẹn</b><span class="muted">Theo dõi thay đổi và bảo vệ tính toàn vẹn của tệp tin quan trọng.</span></div></div>
+      <div class="secure-item"><i>📜</i><div><b>Nhật ký truy vết (Audit Logs)</b><span class="muted">Ghi lại lịch sử thao tác để hỗ trợ kiểm tra và truy cứu.</span></div></div>
+      <div class="secure-item"><i>👤</i><div><b>Phân quyền theo vai trò</b><span class="muted">Tách quyền truy cập theo người dùng, đơn vị, nhóm dữ liệu hoặc chức năng.</span></div></div>
+      <div class="secure-item"><i>🧱</i><div><b>Triển khai mạng kín</b><span class="muted">Phù hợp air-gapped network hoặc hạ tầng hạn chế truy cập Internet.</span></div></div>
+    </div>
+    <div class="chips"><span class="chip">OSED</span><span class="chip">OSEP</span><span class="chip">OSWE</span><span class="chip">CHE</span><span class="chip">CHFI</span><span class="chip">Audit-ready</span></div>
+  </div>
+</section>
+
+<section class="audience">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow" style="color:#f4ca70">Bảo mật & tuân thủ</div><h2>Sinh ra cho các tổ chức coi dữ liệu là tài sản trọng yếu</h2></div>
+    <div class="aud-grid">
+      <div class="aud-card"><div class="icon">🏛️</div><h3>Cơ quan nhà nước</h3><p>Xử lý văn bản, dự thảo và tra cứu quy định/hồ sơ mà vẫn bảo đảm dữ liệu không rời khỏi hệ thống.</p></div>
+      <div class="aud-card"><div class="icon">🪖</div><h3>Đơn vị quốc phòng</h3><p>Khai thác tài liệu trong môi trường offline, không phụ thuộc Internet và đáp ứng yêu cầu mạng kín.</p></div>
+      <div class="aud-card"><div class="icon">🏢</div><h3>Doanh nghiệp dữ liệu nhạy cảm</h3><p>Pháp lý, tài chính, R&D, dữ liệu khách hàng và tài liệu kinh doanh nội bộ.</p></div>
+      <div class="aud-card"><div class="icon">🔬</div><h3>Viện nghiên cứu & đào tạo</h3><p>Tổng hợp, tóm tắt và tra cứu kho dữ liệu khổng lồ để phục vụ nghiên cứu và giảng dạy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container faq">
+    <div><div class="eyebrow">Câu hỏi thường gặp</div><h2>Những điều bạn có thể đang băn khoăn</h2><div class="faq-visual">❓</div></div>
+    <div>
+      <details open><summary>intraMind có cần kết nối Internet không?</summary><p>Không. Hệ thống có thể vận hành 100% offline; toàn bộ dữ liệu, LLM, vector DB và pipeline xử lý được triển khai tại chỗ trên máy cá nhân hoặc server nội bộ.</p></details>
+      <details><summary>Dữ liệu của tôi có bị gửi ra ngoài không?</summary><p>Không bắt buộc. Với mô hình on-premise, dữ liệu được xử lý trong hạ tầng của đơn vị và có thể cô lập hoàn toàn khỏi Internet.</p></details>
+      <details><summary>Những định dạng tài liệu nào được hỗ trợ?</summary><p>Thiết kế hỗ trợ PDF, DOCX, TXT, ảnh, tài liệu scan và có thể mở rộng thêm theo yêu cầu tích hợp.</p></details>
+      <details><summary>Chi phí sử dụng như thế nào?</summary><p>Chi phí phụ thuộc mô hình triển khai, cấu hình hạ tầng, số lượng người dùng và mức độ tùy biến.</p></details>
+      <details><summary>Có thể tùy chỉnh tính năng theo nhu cầu riêng không?</summary><p>Có. Hệ thống có thể tích hợp workflow, biểu mẫu, API, phân quyền và các module nghiệp vụ riêng.</p></details>
+      <details><summary>Hệ thống hỗ trợ dịch những ngôn ngữ nào?</summary><p>Có thể cấu hình theo model sử dụng; tiếng Việt và tiếng Anh là hai ngôn ngữ ưu tiên trong mô hình triển khai phổ biến.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="deploy">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">Mô hình triển khai</div><h2>Triển khai nội bộ</h2><p class="muted">Đăng ký trải nghiệm intraMind hoặc liên hệ để được tư vấn phương án phù hợp với hạ tầng nội bộ của đơn vị.</p></div>
+    <div class="deploy-options">
+      <div class="deploy-card"><div class="icon" style="background:#e9f2ff">🖥️</div><h3>Máy tính cá nhân</h3><p class="muted">Cài trực tiếp trên máy người dùng. Phù hợp nhóm nhỏ hoặc dữ liệu cá nhân hóa cao.</p></div>
+      <div class="deploy-card"><div class="icon" style="background:#e9f2ff">🗄️</div><h3>Server cho đơn vị</h3><p class="muted">Triển khai tập trung cho toàn đơn vị với quản trị user, phân quyền và kho tri thức dùng chung.</p></div>
+    </div>
+    <div class="cta-panel">
+      <div class="eyebrow" style="color:#f4ca70">Sẵn sàng triển khai</div><h2>Đưa AI vào tổ chức của bạn - an toàn từ ngày đầu</h2><p style="color:#c7d6ef;max-width:720px;margin:0 auto 18px">Đăng ký trải nghiệm intraMind hoặc liên hệ để được tư vấn phương án triển khai phù hợp với hạ tầng nội bộ của đơn vị.</p>
+      <div class="hero-actions"><button class="btn btn-gold" data-open>Đăng ký dùng thử →</button><a class="btn btn-light" href="mailto:ict@mta.edu.vn">Liên hệ triển khai</a></div>
+      <div class="cta-meta"><div><small style="color:#71a8ff">ĐƠN VỊ PHÁT TRIỂN</small><strong style="display:block;margin-top:5px">Viện Công nghệ Thông tin & Truyền thông</strong></div><div><small style="color:#71a8ff">TƯ VẤN TRIỂN KHAI</small><strong style="display:block;margin-top:5px">Liên hệ Viện CNTT&TT</strong></div><div><small style="color:#71a8ff">ĐỊA CHỈ</small><strong style="display:block;margin-top:5px">236 Đường Hoàng Quốc Việt, Hà Nội</strong></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="container foot"><div class="brand"><span class="logo">◉</span><span>intraMind<small style="display:block;font-size:10px;font-weight:600;opacity:.7">Bộ công cụ trợ lý ảo nội bộ</small></span></div><div>© 2026 intraMind · Học viện Kỹ thuật Quân sự</div></div></footer>
+
+<div class="modal" id="modal">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="register-title"><button class="close" data-close aria-label="Đóng">×</button>
+    <h2 id="register-title" style="font-size:30px">Đăng ký dùng thử intraMind</h2><p style="color:#c28425;font-style:italic">Điền thông tin và gửi yêu cầu qua ứng dụng email của bạn.</p>
+    <form id="registration" class="form-grid">
+      <div class="field full"><label for="fullname">Họ và Tên *</label><input id="fullname" name="fullname" required autocomplete="name" placeholder="Nhập họ và tên"></div>
+      <div class="field full"><label for="unit">Đơn vị</label><select id="unit" name="unit"><option>Chọn đơn vị</option><option>Cơ quan nhà nước</option><option>Quốc phòng</option><option>Doanh nghiệp</option><option>Viện nghiên cứu / đào tạo</option></select></div>
+      <div class="field"><label for="email">Email *</label><input id="email" name="email" required autocomplete="email" type="email" placeholder="Nhập email"></div>
+      <div class="field"><label for="phone">Số điện thoại *</label><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="Nhập số điện thoại"></div>
+      <div class="field full"><label>Mô hình triển khai mong muốn</label><div class="radio-grid"><label class="radio-card"><input type="radio" name="deployment" value="Máy tính cá nhân" checked> <b>Máy tính cá nhân</b><br><span class="muted">Cài trực tiếp trên máy người dùng</span></label><label class="radio-card"><input type="radio" name="deployment" value="Server cho đơn vị"> <b>Server cho đơn vị</b><br><span class="muted">Triển khai tập trung cho toàn đơn vị</span></label></div></div>
+      <div class="field full"><label for="note">Ghi chú (không bắt buộc)</label><textarea id="note" name="note" placeholder="Nhu cầu, quy mô người dùng, thời gian dự kiến..."></textarea></div>
+      <div class="full"><button class="btn btn-primary submit">Gửi qua email →</button><p class="muted" style="margin-top:12px">Bằng việc gửi thông tin, bạn đồng ý để đội ngũ intraMind liên hệ tư vấn triển khai.</p></div>
+    </form>
+  </div>
+</div>
+<script>
+const modal=document.getElementById('modal');let previousFocus;
+function closeModal(){modal.classList.remove('show');document.body.style.overflow='';previousFocus?.focus()}
+document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{previousFocus=b;modal.classList.add('show');document.body.style.overflow='hidden';document.getElementById('fullname').focus()});
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModal);
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('keydown',e=>{if(!modal.classList.contains('show'))return;if(e.key==='Escape')closeModal();if(e.key==='Tab'){const nodes=[...modal.querySelectorAll('button,input,select,textarea')];const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+const menu=document.getElementById('mobile-menu'),toggle=document.querySelector('.hamb');toggle.onclick=()=>{menu.hidden=!menu.hidden;toggle.setAttribute('aria-expanded',String(!menu.hidden))};menu.querySelectorAll('a,button').forEach(a=>a.addEventListener('click',()=>{menu.hidden=true;toggle.setAttribute('aria-expanded','false')}));
+document.getElementById('registration').addEventListener('submit',e=>{e.preventDefault();const d=new FormData(e.target);const body=['Đăng ký dùng thử intraMind','Họ tên: '+d.get('fullname'),'Đơn vị: '+d.get('unit'),'Email: '+d.get('email'),'Điện thoại: '+d.get('phone'),'Mô hình: '+d.get('deployment'),'Ghi chú: '+d.get('note')].join('\n');window.location.href='mailto:ict@mta.edu.vn?subject='+encodeURIComponent('Đăng ký dùng thử intraMind')+'&body='+encodeURIComponent(body)});
+</script>
+</body>
+</html>
