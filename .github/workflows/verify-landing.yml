@@ -1,13 +1,14 @@
 name: Verify live landing
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/verify-landing.yml']
+  workflow_run:
+    workflows: ['Deploy landing page']
+    types: [completed]
 permissions:
   contents: read
 jobs:
   verify:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -39,6 +40,9 @@ jobs:
             const iconResponse=await page.request.get('http://'+process.env.SSH_HOST+':8088/mind41-symbol.svg');
             assert.equal(iconResponse.status(),200);
             assert.match(await iconResponse.text(),/<svg/);
+            await page.locator('.thumb').first().scrollIntoViewIfNeeded();
+            await page.waitForFunction(()=>[...document.querySelectorAll('.thumb img')].length===3 && [...document.querySelectorAll('.thumb img')].every(img=>img.complete&&img.naturalWidth>0));
+            await page.locator('.thumb').first().locator('..').locator('..').screenshot({path:'screenshots/features.png'});
             await page.screenshot({path:'screenshots/desktop.png',fullPage:true});
             await page.setViewportSize({width:390,height:844});
             assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Mobile horizontal overflow');
