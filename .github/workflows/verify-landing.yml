@@ -35,6 +35,10 @@ jobs:
             const response=await page.goto('http://'+process.env.SSH_HOST+':8088/',{waitUntil:'networkidle',timeout:30000});
             assert.equal(response.status(),200);
             assert.match(await page.title(),/Mind41/);
+            assert.equal(await page.locator('.brand .logo svg').count(),3);
+            const iconResponse=await page.request.get('http://'+process.env.SSH_HOST+':8088/mind41-symbol.svg');
+            assert.equal(iconResponse.status(),200);
+            assert.match(await iconResponse.text(),/<svg/);
             await page.screenshot({path:'screenshots/desktop.png',fullPage:true});
             await page.setViewportSize({width:390,height:844});
             assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Mobile horizontal overflow');
