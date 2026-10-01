@@ -20,7 +20,7 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-      - name: Verify live page
+      - name: Verify preserved V1 page
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
@@ -33,7 +33,7 @@ jobs:
             const page=await browser.newPage({viewport:{width:1440,height:1000}});
             const errors=[];
             page.on('pageerror',e=>errors.push(e.message));
-            const response=await page.goto('http://'+process.env.SSH_HOST+':8088/',{waitUntil:'networkidle',timeout:30000});
+            const response=await page.goto('http://'+process.env.SSH_HOST+':8088/v1/',{waitUntil:'networkidle',timeout:30000});
             assert.equal(response.status(),200);
             assert.match(await page.title(),/Mind41/);
             assert.equal(await page.locator('.brand .logo svg').count(),3);
