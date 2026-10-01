@@ -30,10 +30,14 @@ jobs:
             const browser=await chromium.launch();
             const page=await browser.newPage({viewport:{width:1440,height:1000}});
             const errors=[];page.on('pageerror',e=>errors.push(e.message));
-            const response=await page.goto('https://mind41.v41.ai/v2/',{waitUntil:'networkidle',timeout:45000});
+            const response=await page.goto('https://mind41.v41.ai/',{waitUntil:'networkidle',timeout:45000});
             assert.equal(response.status(),200);
-            assert.match(await page.title(),/Mind41 V2/);
+            assert.match(await page.title(),/Mind41/);
             assert.equal(await page.locator('.assistant-card').count(),6);
+            assert.equal(await page.locator('.field-group').count(),4);
+            await page.locator('.field-group').nth(1).locator('summary').click();
+            assert.equal(await page.locator('.field-group').nth(1).getAttribute('open'),'');
+            assert.equal(await page.locator('a[href="/v1/"]').count(),1);
             assert.equal(await page.locator('.role-tab').count(),5);
             for(let i=0;i<5;i++){
               await page.locator('[data-role="'+i+'"]').click();
