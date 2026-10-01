@@ -1,0 +1,80 @@
+name: Verify Mind41 V2
+on:
+  workflow_run:
+    workflows: ['Deploy landing page']
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Check V2 on desktop and mobile
+        run: |
+          mkdir -p screenshots-v2
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch();
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
+            const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            const response=await page.goto('https://mind41.v41.ai/v2/',{waitUntil:'networkidle',timeout:45000});
+            assert.equal(response.status(),200);
+            assert.match(await page.title(),/Mind41 V2/);
+            assert.equal(await page.locator('.assistant-card').count(),6);
+            assert.equal(await page.locator('.role-tab').count(),5);
+            for(let i=0;i<5;i++){
+              await page.locator('[data-role="'+i+'"]').click();
+              assert.equal(await page.locator('#role-panel-'+i).isVisible(),true);
+              assert.equal(await page.locator('.role-panel:visible').count(),1);
+            }
+            await page.locator('[data-role="0"]').click();
+            await page.locator('[data-role="0"]').press('ArrowRight');
+            assert.equal(await page.locator('#role-panel-1').isVisible(),true);
+            await page.locator('[data-role="0"]').click();
+            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+            await page.locator('#roles').screenshot({path:'screenshots-v2/roles-desktop.png'});
+            await page.locator('#workflow').screenshot({path:'screenshots-v2/workflow-desktop.png'});
+            await page.screenshot({path:'screenshots-v2/desktop.png',fullPage:true});
+            for(const width of [390,768]){
+              await page.setViewportSize({width,height:844});
+              assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Overflow at '+width);
+            }
+            await page.setViewportSize({width:390,height:844});
+            await page.locator('#roles').screenshot({path:'screenshots-v2/roles-mobile.png'});
+            await page.screenshot({path:'screenshots-v2/mobile.png',fullPage:true});
+            await page.locator('.hamb').click();
+            assert.equal(await page.locator('#mobile-menu').isVisible(),true);
+            await page.locator('#mobile-menu [data-open]').click();
+            assert.equal(await page.locator('.modal').isVisible(),true);
+            assert.equal(await page.locator('#fullname').evaluate(e=>e===document.activeElement),true);
+            await page.keyboard.press('Escape');
+            assert.equal(await page.locator('.modal').isVisible(),false);
+            for(const img of await page.locator('img').all()){
+              await img.scrollIntoViewIfNeeded();
+              await img.evaluate(i=>i.complete?Promise.resolve():new Promise((res,rej)=>{i.onload=res;i.onerror=rej}));
+              assert.equal(await img.evaluate(i=>i.naturalWidth>0),true);
+            }
+            assert.deepEqual(errors,[]);
+            console.log('V2 HTTP 200; 6 assistants; all roles; desktop/mobile; menu, modal, images and scripts passed.');
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mind41-v2-screenshots
+          path: screenshots-v2/
+          retention-days: 7
