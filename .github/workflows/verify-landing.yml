@@ -77,6 +77,35 @@ jobs:
             await browser.close();
           })().catch(e=>{console.error(e.message);process.exit(1)});
           JS
+      - name: Verify hero intro video on V2
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch();
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
+            await page.goto('http://'+process.env.SSH_HOST+':8088/',{waitUntil:'networkidle'});
+            const video=page.locator('#mind41-intro');
+            assert.equal(await video.count(),1);
+            await video.scrollIntoViewIfNeeded();
+            await video.evaluate(v=>{v.load();});
+            await page.waitForFunction(()=>document.querySelector('#mind41-intro').readyState>=2);
+            assert.equal(await video.evaluate(v=>Math.round(v.duration)),14);
+            await video.evaluate(v=>v.play());
+            await page.waitForFunction(()=>document.querySelector('#mind41-intro').currentTime>0.3);
+            await video.evaluate(v=>v.pause());
+            await page.locator('.hero-film').screenshot({path:'screenshots/video-desktop.png'});
+            await page.setViewportSize({width:390,height:844});
+            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+            await page.locator('.hero-film').screenshot({path:'screenshots/video-mobile.png'});
+            await page.goto('http://'+process.env.SSH_HOST+':8088/v2/',{waitUntil:'networkidle'});
+            assert.equal(await page.locator('#mind41-intro').count(),1);
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
