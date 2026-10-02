@@ -77,6 +77,16 @@ jobs:
             await browser.close();
           })().catch(e=>{console.error(e.message);process.exit(1)});
           JS
+      - name: Verify complete video transfer and decoding
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          curl --fail --retry 3 "http://${SSH_HOST}:8088/assets/mind41-gemini-v2-fixed.mp4" -o /tmp/mind41.mp4
+          echo "0f15a35a13b6b11a243a697c51ca6c4d0c78d107e37cf4935b35e829f296a63a  /tmp/mind41.mp4" | sha256sum -c -
+          ffmpeg -v error -xerror -i /tmp/mind41.mp4 -f null -
+          ffprobe -v error -select_streams a:0 -show_entries stream=codec_name,duration -of json /tmp/mind41.mp4
       - name: Verify hero intro video on V2
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
@@ -96,7 +106,9 @@ jobs:
             assert.equal(await video.evaluate(v=>Math.round(v.duration)),20);
             assert.equal(await video.evaluate(v=>v.muted),false);
             await video.evaluate(v=>{v.muted=true;return v.play()});
-            await page.waitForFunction(()=>document.querySelector('#mind41-intro').currentTime>0.3);
+            await page.waitForFunction(()=>document.querySelector('#mind41-intro').ended, {timeout:45000});
+            assert.equal(await video.evaluate(v=>v.error),null);
+            assert.ok(await video.evaluate(v=>v.currentTime)>=19.9);
             await video.evaluate(v=>v.pause());
             await page.locator('.hero-film').screenshot({path:'screenshots/video-desktop.png'});
             await page.setViewportSize({width:390,height:844});
