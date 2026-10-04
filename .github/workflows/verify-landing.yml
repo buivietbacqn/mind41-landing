@@ -132,7 +132,8 @@ jobs:
             const base='http://'+process.env.SSH_HOST+':8088';
             await page.goto(base+'/',{waitUntil:'networkidle'});
             assert.equal(await page.locator('[data-capacity]').count(),5);
-            assert.match(await page.locator('.capacity-disclaimer').innerText(),/GIẢ LẬP/);
+            assert.equal(await page.locator('.capacity-disclaimer').count(),0);
+            assert.match(await page.locator('#capacity .eyebrow').innerText(),/tham khảo/);
             const config=await (await page.request.get(base+'/assets/capacity-data.json')).json();
             assert.equal(config.status,'dummy-unverified');
             await page.locator('#capacity').scrollIntoViewIfNeeded();
