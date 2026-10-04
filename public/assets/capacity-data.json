@@ -1,0 +1,8 @@
+{
+  "status": "dummy-unverified",
+  "documentsPerDay": 100,
+  "pagesPerBatch": 500,
+  "concurrentUsers": 20,
+  "documentsPerYear": 26000,
+  "existingDocuments": 100000
+}
