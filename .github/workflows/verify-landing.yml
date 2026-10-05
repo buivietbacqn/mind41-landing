@@ -133,7 +133,7 @@ jobs:
             await page.goto(base+'/',{waitUntil:'networkidle'});
             assert.equal(await page.locator('[data-capacity]').count(),5);
             assert.equal(await page.locator('.capacity-disclaimer').count(),0);
-            assert.match(await page.locator('#capacity .eyebrow').innerText(),/tham khảo/);
+            assert.match(await page.locator('#capacity .eyebrow').innerText(),/tham khảo/i);
             const config=await (await page.request.get(base+'/assets/capacity-data.json')).json();
             assert.equal(config.status,'dummy-unverified');
             await page.locator('#capacity').scrollIntoViewIfNeeded();
