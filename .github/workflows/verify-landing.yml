@@ -158,6 +158,60 @@ jobs:
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
+      - name: Verify dedicated V3 landing
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch();
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
+            const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            const response=await page.goto('http://'+process.env.SSH_HOST+':8088/v3/',{waitUntil:'networkidle'});
+            assert.equal(response.status(),200);
+            assert.match(await page.title(),/xã, phường/);
+            assert.equal(await page.locator('.assistant').count(),6);
+            assert.equal(await page.locator('[data-capacity]').count(),5);
+            for(const selector of ['.capability img','.company img']){
+              for(const img of await page.locator(selector).all()){
+                await img.scrollIntoViewIfNeeded();
+                await img.evaluate(i=>i.decode());
+              }
+            }
+            await page.locator('[data-role="1"]').click();
+            assert.equal(await page.locator('#panel-1').isVisible(),true);
+            await page.locator('[data-role="0"]').click();
+            await page.locator('.assistant details').first().locator('summary').click();
+            assert.equal(await page.locator('.assistant details').first().getAttribute('open'),'');
+            await page.locator('.assistant details').first().locator('summary').click();
+            await page.evaluate(()=>scrollTo(0,0));
+            await page.screenshot({path:'screenshots/v3-desktop.png',fullPage:true});
+            await page.locator('.hero').screenshot({path:'screenshots/v3-hero.png'});
+            await page.setViewportSize({width:390,height:844});
+            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'V3 mobile overflow');
+            await page.screenshot({path:'screenshots/v3-mobile.png',fullPage:true});
+            await page.locator('.menu-btn').click();
+            assert.equal(await page.locator('#mobile-menu').isVisible(),true);
+            await page.locator('#mobile-menu [data-open]').click();
+            assert.equal(await page.locator('#modal').isVisible(),true);
+            assert.equal(await page.locator('#fullname').evaluate(e=>e===document.activeElement),true);
+            await page.screenshot({path:'screenshots/v3-form.png'});
+            await page.keyboard.press('Escape');
+            assert.equal(await page.locator('#modal').isVisible(),false);
+            const video=page.locator('#mind41-intro');
+            await video.evaluate(v=>v.load());
+            await page.waitForFunction(()=>document.querySelector('#mind41-intro').readyState>=2);
+            assert.equal(await video.evaluate(v=>Math.round(v.duration)),20);
+            assert.equal(await video.evaluate(v=>v.muted),false);
+            await video.evaluate(v=>{v.muted=true;return v.play()});
+            await page.waitForFunction(()=>document.querySelector('#mind41-intro').ended,null,{timeout:45000});
+            assert.equal(await video.evaluate(v=>v.error),null);
+            assert.deepEqual(errors,[]);
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
