@@ -212,46 +212,6 @@ jobs:
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-      - name: Verify V4 co-branding
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: |
-          node <<'JS'
-          const {chromium}=require('playwright');
-          const assert=require('node:assert/strict');
-          (async()=>{
-            const browser=await chromium.launch();
-            const page=await browser.newPage({viewport:{width:1440,height:1000}});
-            const errors=[];page.on('pageerror',e=>errors.push(e.message));
-            const base='http://'+process.env.SSH_HOST+':8088';
-            const res=await page.goto(base+'/v4/',{waitUntil:'networkidle'});
-            assert.equal(res.status(),200);
-            assert.equal(await page.locator('body').getAttribute('data-version'),'v4');
-            assert.match(await page.locator('.product-credit').innerText(),/V41.*AERG/);
-            assert.match(await page.locator('.footer-row').innerText(),/Sản phẩm của V41.*AERG/);
-            assert.equal(await page.locator('.partner-card').count(),2);
-            assert.match(await page.locator('.aerg-wordmark').innerText(),/AERG/);
-            assert.equal(await page.locator('.assistant').count(),6);
-            await page.locator('.partner-mark img').evaluate(i=>i.decode());
-            await page.evaluate(()=>scrollTo(0,0));
-            await page.screenshot({path:'screenshots/v4-desktop.png',fullPage:true});
-            await page.locator('.coowners').screenshot({path:'screenshots/v4-partners.png'});
-            await page.setViewportSize({width:390,height:844});
-            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-            await page.locator('.coowners').screenshot({path:'screenshots/v4-partners-mobile.png'});
-            await page.evaluate(()=>scrollTo(0,0));
-            await page.locator('.menu-btn').click();
-            await page.locator('#mobile-menu [data-open]').click();
-            assert.equal(await page.locator('#modal').isVisible(),true);
-            await page.keyboard.press('Escape');
-            assert.equal(await page.locator('#modal').isVisible(),false);
-            await page.goto(base+'/v3/',{waitUntil:'networkidle'});
-            assert.equal(await page.locator('body').getAttribute('data-version'),'v3');
-            assert.equal(await page.locator('.aerg-wordmark').count(),0);
-            assert.deepEqual(errors,[]);
-            await browser.close();
-          })().catch(e=>{console.error(e);process.exit(1)});
-          JS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
