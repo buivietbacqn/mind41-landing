@@ -35,10 +35,10 @@ jobs:
             const res=await page.goto(base+'/v4/',{waitUntil:'networkidle'});
             assert.equal(res.status(),200);
             assert.equal(await page.locator('body').getAttribute('data-version'),'v4');
-            assert.match(await page.locator('.product-credit').innerText(),/V41.*AERG/);
-            assert.match(await page.locator('.footer-row').innerText(),/Sản phẩm của V41.*AERG/);
+            assert.match(await page.locator('.product-credit').innerText(),/V41.*AEG/);
+            assert.match(await page.locator('.footer-row').innerText(),/Sản phẩm của V41.*AEG/);
             assert.equal(await page.locator('.partner-card').count(),2);
-            assert.match(await page.locator('.aerg-wordmark').innerText(),/AERG/);
+            assert.match(await page.locator('.aeg-wordmark').innerText(),/AEG/);
             assert.equal(await page.locator('.assistant').count(),6);
             await page.locator('.partner-mark img').scrollIntoViewIfNeeded();
             await page.locator('.partner-mark img').evaluate(i=>i.decode());
@@ -56,7 +56,7 @@ jobs:
             assert.equal(await page.locator('#modal').isVisible(),false);
             await page.goto(base+'/v3/',{waitUntil:'networkidle'});
             assert.equal(await page.locator('body').getAttribute('data-version'),'v3');
-            assert.equal(await page.locator('.aerg-wordmark').count(),0);
+            assert.equal(await page.locator('.aeg-wordmark').count(),0);
             assert.deepEqual(errors,[]);
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
