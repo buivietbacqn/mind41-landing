@@ -1,0 +1,77 @@
+name: Verify Mind41 pricing
+on:
+  workflow_run:
+    workflows: ['Deploy landing page']
+    types: [completed]
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect domains
+        run: |
+          for domain in mind41.v41.vn mind41.v41.ai; do
+            echo "DOMAIN $domain"
+            getent ahostsv4 "$domain" || true
+            curl --silent --show-error --location --max-time 20 --output /dev/null --write-out 'HTTP %{http_code} URL %{url_effective}\n' "https://$domain/chinhsachgia/" || true
+          done
+      - name: Install browser
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify pricing page and mobile layout
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          mkdir -p screenshots
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch();
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
+            const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            const base='http://'+process.env.SSH_HOST+':8088';
+            const res=await page.goto(base+'/chinhsachgia/',{waitUntil:'networkidle'});
+            assert.equal(res.status(),200);
+            assert.match(await page.title(),/Mind41/);
+            assert.equal(await page.locator('.card').count(),3);
+            assert.equal(await page.locator('#first').innerText(),'74 triệu đồng');
+            await page.locator('[data-cycle="month"]').click();
+            assert.equal(await page.locator('[data-price="1"]').innerText(),'5,9');
+            assert.match(await page.locator('[data-total="1"]').innerText(),/85,8/);
+            await page.locator('[data-cycle="year"]').click();
+            await page.locator('#mode').selectOption('private');
+            assert.match(await page.locator('#first').innerText(),/354/);
+            await page.locator('#mode').selectOption('perpetual');
+            assert.match(await page.locator('#first').innerText(),/554/);
+            await page.locator('#mode').selectOption('rent');
+            assert.match(await page.locator('#first').innerText(),/252,8/);
+            await page.locator('#mode').selectOption('cloud');
+            assert.equal(await page.locator('#internal-content').count(),0);
+            assert.equal((await page.request.get(base+'/chinhsachgia/internal.enc.json')).status(),404);
+            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+            await page.screenshot({path:'screenshots/pricing-desktop.png',fullPage:true});
+            await page.setViewportSize({width:390,height:844});
+            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+            await page.screenshot({path:'screenshots/pricing-mobile.png',fullPage:true});
+            assert.deepEqual(errors,[]);
+            const redirect=await page.request.get(base+'/chinhsachgia',{maxRedirects:0});
+            assert.ok([200,301,302,308].includes(redirect.status()));
+            console.log('PASS desktop/mobile, billing, estimates, public pricing only, route');
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pricing-screenshots
+          path: screenshots/
+          retention-days: 7
